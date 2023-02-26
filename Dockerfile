@@ -1,7 +1,7 @@
 FROM node:19-bullseye-slim
-WORKDIR /google-cloud-ci-cd-react
-COPY . /google-cloud-ci-cd-react
+WORKDIR /app
+COPY . /app
 RUN yarn && yarn build
 
 FROM nginx:latest
-COPY --from=build /google-cloud-ci-cd-react/build /data/server3
+COPY --from=build /app/build /usr/share/nginx/html
