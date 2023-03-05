@@ -18,17 +18,18 @@ jobs:
             - docker/build:
                   image: $DOCKER_IMAGE
                   tag: $DOCKER_TAG
-            # - docker/push:
-            #       digest-path: /tmp/digest.txt
-            #       image: $DOCKER_IMAGE
-            #       tag: $DOCKER_TAG
             - run:
-                  name: Publish Docker Image to Docker Hub
+                  name: Logout Docker
                   command: |
                       sudo docker logout
-                      echo "$DOCKER_PASSWORD" | sudo docker login -u "$DOCKER_LOGIN" --password-stdin
-                      docker tag $DOCKER_IMAGE $DOCKER_REGISTRY_USERNAME_IMAGE
-                      docker push $DOCKER_IMAGE:$DOCKER_TAG
+                  #   echo "$DOCKER_PASSWORD" | sudo docker login -u "$DOCKER_LOGIN" --password-stdin
+                  #   docker tag $DOCKER_IMAGE $DOCKER_REGISTRY_USERNAME_IMAGE
+                  #   docker push $DOCKER_IMAGE:$DOCKER_TAG
+            - docker/check
+            - docker/push:
+                  digest-path: /tmp/digest.txt
+                  image: $DOCKER_IMAGE
+                  tag: $DOCKER_TAG
             - run:
                   command: |
                       echo "Digest is: $(</tmp/digest.txt)"
