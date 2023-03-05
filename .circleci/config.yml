@@ -13,8 +13,6 @@ jobs:
         executor: docker/docker
         steps:
             - setup_remote_docker
-            - checkout
-            - docker/check
             - docker/build:
                   image: $DOCKER_IMAGE
                   tag: $DOCKER_TAG
