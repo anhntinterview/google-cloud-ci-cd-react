@@ -19,13 +19,11 @@ jobs:
                   image: $DOCKER_IMAGE
                   tag: $DOCKER_TAG
             - run:
-                  name: Logout Docker
+                  name: Docker was pushing
                   command: |
-                      sudo docker logout
-                  #   echo "$DOCKER_PASSWORD" | sudo docker login -u "$DOCKER_LOGIN" --password-stdin
-                  #   docker tag $DOCKER_IMAGE $DOCKER_REGISTRY_USERNAME_IMAGE
-                  #   docker push $DOCKER_IMAGE:$DOCKER_TAG
-            - docker/check
+                      echo "$DOCKER_PASSWORD" | docker login docker.io -u "$DOCKER_LOGIN" --password-stdin
+                      docker tag $DOCKER_IMAGE $DOCKER_REGISTRY_USERNAME_IMAGE
+                      docker push $DOCKER_IMAGE:$DOCKER_TAG
             - docker/push:
                   digest-path: /tmp/digest.txt
                   image: $DOCKER_IMAGE
