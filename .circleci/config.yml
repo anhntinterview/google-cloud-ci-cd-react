@@ -1,0 +1,41 @@
+# my circleci
+version: 2.1
+
+orbs:
+    node: circleci/node@4.7
+    docker: circleci/docker@2.2.0
+jobs:
+    build-and-push:
+        environment:
+            DOCKER_IMAGE: anhnt/google-cloud-ci-cd-react
+            DOCKER_TAG: latest
+        executor: docker/docker
+        steps:
+            - setup_remote_docker
+            - checkout
+            - docker/check:
+                  docker-username: DOCKER_USERNAME
+                  docker-password: DOCKER_PASSWORD
+            - docker/build:
+                  image: $DOCKER_IMAGE
+                  tag: $DOCKER_TAG
+            - docker/push:
+                  digest-path: /tmp/digest.txt
+                  image: $DOCKER_IMAGE
+                  tag: $DOCKER_TAG
+            - run:
+                  command: |
+                      echo "Digest is: $(</tmp/digest.txt)"
+workflows:
+    my-pipeline:
+        jobs:
+            - node/test:
+                  version: "16.10"
+                  pkg-manager: npm
+            - build-and-push:
+                  requires:
+                      - node/test
+                  filters:
+                      branches:
+                          only:
+                              - master
