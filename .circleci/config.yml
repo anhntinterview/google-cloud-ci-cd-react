@@ -1,9 +1,9 @@
-# my circleci
+# my config
 version: 2.1
-
 orbs:
-    node: circleci/node@4.7
-    docker: circleci/docker@2.2.0
+    node: circleci/node@3.0.0
+    docker: circleci/docker@1.4.0
+
 jobs:
     build-and-push:
         environment:
@@ -13,9 +13,7 @@ jobs:
         steps:
             - setup_remote_docker
             - checkout
-            - docker/check:
-                  docker-username: DOCKER_LOGIN
-                  docker-password: DOCKER_PASSWORD
+            - docker/check
             - docker/build:
                   image: $DOCKER_IMAGE
                   tag: $DOCKER_TAG
@@ -26,12 +24,11 @@ jobs:
             - run:
                   command: |
                       echo "Digest is: $(</tmp/digest.txt)"
+
 workflows:
     my-pipeline:
         jobs:
-            - node/test:
-                  version: "16.10"
-                  pkg-manager: npm
+            - node/test
             - build-and-push:
                   requires:
                       - node/test
