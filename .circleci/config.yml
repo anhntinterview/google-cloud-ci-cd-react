@@ -25,6 +25,7 @@ jobs:
             - run:
                 name: Build application Docker image
                 command: |
+                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
                     docker build --cache-from=$DOCKER_IMAGE:$DOCKER_TAG -t $DOCKER_IMAGE:$DOCKER_TAG .
             - run:
                   name: Publish Docker Image to Docker Hub
