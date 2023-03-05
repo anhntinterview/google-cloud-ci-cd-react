@@ -6,7 +6,7 @@ orbs:
     docker: circleci/docker@2.2.0
 jobs:
     build-and-push:
-        enviroment:
+        environment:
             DOCKER_IMAGE: anhnt/google-cloud-ci-cd-react
             DOCKER_TAG: latest
         executor: docker/docker
@@ -33,9 +33,9 @@ workflows:
                   version: "16.10"
                   pkg-manager: npm
             - build-and-push:
+                  requires:
+                      - node/test
                   filters:
-                      requires:
-                          - node/test
                       branches:
                           only:
                               - master
