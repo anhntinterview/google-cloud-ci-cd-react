@@ -2,18 +2,40 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@4.7
-
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+    node: circleci/node@4.7
+    docker: circleci/docker@2.2.0
+jobs:
+    build-and-push:
+        enviroment:
+            DOCKER_IMAGE: anhnt/google-cloud-ci-cd-react
+            DOCKER_TAG: latest
+        executor: docker/docker
+        steps:
+            - setup_remote_docker
+            - checkout
+            - docker/check:
+                  docker-username: DOCKER_USERNAME
+                  docker-password: DOCKER_PASSWORD
+            - docker/build:
+                  image: $DOCKER_IMAGE
+                  tag: $DOCKER_TAG
+            - docker/push:
+                  digest-path: /tmp/digest.txt
+                  image: $DOCKER_IMAGE
+                  tag: $DOCKER_TAG
+            - run:
+                  command: |
+                      echo "Digest is: $(</tmp/digest.txt)"
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
-    jobs:
-      - node/test:
-          # This is the node version to use for the `cimg/node` tag
-          # Relevant tags can be found on the CircleCI Developer Hub
-          # https://circleci.com/developer/images/image/cimg/node
-          version: '16.10'
-          # If you are using yarn, change the line below from "npm" to "yarn"
-          pkg-manager: npm
+    my-pipeline:
+        jobs:
+            - node/test:
+                  version: "16.10"
+                  pkg-manager: npm
+            - build-and-push:
+                  filters:
+                      requires:
+                          - node/test
+                      branches:
+                          only:
+                              - master
