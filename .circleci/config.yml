@@ -17,8 +17,6 @@ jobs:
             - docker/build:
                   image: $DOCKER_IMAGE
                   tag: $DOCKER_TAG
-            - checkout
-            - docker/check
             - docker/push:
                   digest-path: /tmp/digest.txt
                   image: $DOCKER_IMAGE
