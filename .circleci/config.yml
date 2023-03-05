@@ -26,6 +26,10 @@ jobs:
             - run:
                   command: |
                       echo "Digest is: $(</tmp/digest.txt)"
+    deploy:
+        executor: docker/docker
+        steps: 
+            - run 
 workflows:
     my-pipeline:
         jobs:
