@@ -17,12 +17,15 @@ jobs:
             - docker/build:
                   image: $DOCKER_IMAGE
                   tag: $DOCKER_TAG
-            - checkout
-            - docker/check
-            - docker/push:
-                  digest-path: /tmp/digest.txt
-                  image: $DOCKER_IMAGE
-                  tag: $DOCKER_TAG
+            # - docker/push:
+            #       digest-path: /tmp/digest.txt
+            #       image: $DOCKER_IMAGE
+            #       tag: $DOCKER_TAG
+            - run:
+                  name: Publish Docker Image to Docker Hub
+                  command: |
+                      echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
+                      docker push $IMAGE_NAME:latest"
             - run:
                   command: |
                       echo "Digest is: $(</tmp/digest.txt)"
