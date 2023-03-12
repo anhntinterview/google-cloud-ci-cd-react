@@ -19,7 +19,6 @@ jobs:
       - docker/build:
           image: $DOCKER_LOGIN/$DOCKER_IMAGE
           tag: $DOCKER_TAG
-
       - docker/push:
           digest-path: /tmp/digest.txt
           image: $DOCKER_LOGIN/$DOCKER_IMAGE
