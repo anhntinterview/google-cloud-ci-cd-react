@@ -7,7 +7,7 @@ orbs:
 jobs:
   build-and-push:
     environment:
-      DOCKER_IMAGE: anhnt/myreact
+      DOCKER_IMAGE: myreact
       DOCKER_TAG: latest
     executor: docker/docker
     steps:
