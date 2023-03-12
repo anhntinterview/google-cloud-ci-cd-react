@@ -11,7 +11,7 @@ on:
         required: true
 env:
   REGISTRY: registry.digitalocean.com/myreact
-  IMAGE_NAME: google-cloud-ci-cd-react
+  IMAGE_NAME: anhnt/google-cloud-ci-cd-react
     
 jobs:
   build_and_push:
