@@ -53,9 +53,9 @@ jobs:
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Stop running container
-            docker stop $(echo $IMAGE_NAME)
+            docker stop $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
             # Remove old container
-            docker rm $(echo $IMAGE_NAME)
+            docker rm $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
             # Pull new container
             docker pull $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest
             # Run a new container from a new image
