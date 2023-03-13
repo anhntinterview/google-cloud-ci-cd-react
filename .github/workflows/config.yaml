@@ -55,11 +55,11 @@ jobs:
             # Stop running container
             docker stop $(echo $IMAGE_NAME)
             # Remove old container
-            docker rmi $(echo $IMAGE_NAME)
+            docker rm $(echo $IMAGE_NAME)
             # Pull new container
             docker pull $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest
             # Run a new container from a new image
-            docker run -d -p 8080:80 $(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+            docker run -d -p 8080:80 $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
             --restart always \
             --name $(echo $IMAGE_NAME) \
             $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
