@@ -53,9 +53,10 @@ jobs:
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Stop running container
-            docker kill $(docker ps -a -q)
-            # Remove old container
+            docker stop $(docker ps -q)
+            # Remove old container & image
             docker rm $(docker ps -a)
+            docker rmi $(docker image ls -a)
             # Pull new container
             docker pull $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest
             # Run a new container from a new image
