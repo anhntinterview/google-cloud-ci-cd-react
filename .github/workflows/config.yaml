@@ -56,6 +56,8 @@ jobs:
             docker stop $(echo $IMAGE_NAME)
             # Remove old container
             docker rm $(echo $IMAGE_NAME)
+            # Re-build new container
+            docker build -t $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7) .
             # Run a new container from a new image
             docker run -d -p 80:80 $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
             --restart always \
