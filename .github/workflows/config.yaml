@@ -22,7 +22,6 @@ jobs:
         
       - name: Build container image
         run: docker build -t $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest .
-        # run: docker build -t $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7) .
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -58,7 +57,6 @@ jobs:
             # Remove old container
             docker rm $(echo $IMAGE_NAME)
             # Run a new container from a new image
-            # docker run -d \
             docker run --name test-react-running -d -p 8080:80 test-react \
             --restart always \
             --name $(echo $IMAGE_NAME) \
