@@ -58,3 +58,6 @@ jobs:
             docker rm $(echo $IMAGE_NAME)
             # Run a new container from a new image
             docker run --name test-react-running -d -p 8080:80 $(echo $REGISTRY)/$(echo $IMAGE_NAME) \
+            --restart always \
+            --name $(echo $IMAGE_NAME) \
+            $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
