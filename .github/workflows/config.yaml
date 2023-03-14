@@ -54,13 +54,13 @@ jobs:
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Stop running container
-            # docker stop $(echo $CONTAINER_RUNNING_NAME)
-            docker stop testreactrunning
+            docker stop $(echo $CONTAINER_RUNNING_NAME)
+            # docker stop testreactrunning
             # Remove old container & image
-            # docker rm $(echo $CONTAINER_RUNNING_NAME)
-            # docker rmi $(echo $IMAGE_NAME)
-            docker rm testreactrunning
-            docker rmi -f $(docker images | grep 'test-react')
+            docker rm $(echo $CONTAINER_RUNNING_NAME)
+            docker rmi $(docker image ls -q)
+            # docker rm testreactrunning
+            # docker rmi -f $(docker images | grep 'test-react')
             # Pull new container
             docker pull $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest
             # Run a new container from a new image
