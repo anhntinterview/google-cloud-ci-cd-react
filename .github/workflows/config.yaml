@@ -12,7 +12,7 @@ on:
 env:
   REGISTRY: registry.digitalocean.com/myreact
   IMAGE_NAME: test-react
-  CONTAINER_RUNNING_NAME: test-react-running
+  CONTAINER_RUNNING_NAME: testreactrunning
 
 jobs:
   build_and_push:
@@ -61,7 +61,7 @@ jobs:
             # Pull new container
             docker pull $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest
             # Run a new container from a new image
-            docker run --name $(echo $CONTAINER_RUNNING_NAME) -d -p 8080:80 $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+            docker run --name testreactrunning -d -p 8080:80 $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
             --restart always \
             --name $(echo $IMAGE_NAME) \
             $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
