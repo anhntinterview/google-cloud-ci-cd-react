@@ -1,13 +1,11 @@
 version: 2.1
-
+orbs:
+  node: circleci/docker@2.2.0
 # Define the jobs we want to run for this project
 jobs:
   pull-and-build:
-    environment:
-      USER: root
-      IP: 139.59.238.79
     docker:
-      - image: circleci-myreact
+      - image: "cimg/base:stable"
     steps:
       - checkout
       - run: ssh -oStrictHostKeyChecking=no -v $USER@$IP "./deploy.sh"
