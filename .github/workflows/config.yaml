@@ -12,7 +12,7 @@ on:
 env:
   REGISTRY: registry.digitalocean.com/myreact
   IMAGE_NAME: test-react
-  CONTAINER_RUNNING_NAME: testreactrunning
+  CONTAINER_RUNNING: testreactrunning
 
 jobs:
   build_and_push:
@@ -54,10 +54,10 @@ jobs:
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Stop running container
-            docker stop $CONTAINER_RUNNING_NAME
+            docker stop $(echo $CONTAINER_RUNNING)
             # docker stop testreactrunning
             # Remove old container & image
-            docker rm $CONTAINER_RUNNING_NAME
+            docker rm $(echo $CONTAINER_RUNNING)
             docker rmi $(docker image ls -q)
             # docker rm testreactrunning
             # docker rmi -f $(docker images | grep 'test-react')
