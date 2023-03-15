@@ -23,7 +23,7 @@ jobs:
 
       # LOGIN AND PUSH IMAGE TO DOCKERHUB
       - name: Log in to DockerHub
-        run: echo {{ secrets.DOCKERHUB_PASSWORD }} | docker login -u {{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: Build docker image
         run: docker build -t $(echo $DOCKERHUB_TAG)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7) .
       - name: Push docker image to DockerHub
