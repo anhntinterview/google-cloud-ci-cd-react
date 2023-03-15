@@ -43,7 +43,7 @@ jobs:
            - "f1:be:46:63:91:ff:db:c1:4f:35:25:82:7a:1e:65:b4"
      - run:
         name: Access SSH Key 
-        command: ssh -oStrictHostKeyChecking=no -v circleci@139.59.238.79
+        command: ssh -oStrictHostKeyChecking=no circleci@139.59.238.79
      - run:
         name: Docker Compose Command
         command: |
