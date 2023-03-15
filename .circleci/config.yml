@@ -41,7 +41,16 @@ jobs:
      - add_ssh_keys:
          fingerprints:
            - "f1:be:46:63:91:ff:db:c1:4f:35:25:82:7a:1e:65:b4"
-     - run: ssh -oStrictHostKeyChecking=no -v circleci@139.59.238.79 'deploy.sh'
+     - run:
+        name: Access SSH Key 
+        command: ssh -oStrictHostKeyChecking=no -v circleci@139.59.238.79
+     - run:
+        name: Docker Compose Command
+        command: |
+          docker-compose stop
+          docker-compose rm -f
+          docker-compose pull
+          docker-compose up -d
     #  - run: ssh -oStrictHostKeyChecking=no $HOST_USER@$HOST './deploy.sh'
 
 workflows:
