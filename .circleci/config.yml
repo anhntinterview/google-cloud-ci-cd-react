@@ -2,39 +2,34 @@ version: 2.1
 
 orbs:
   node: circleci/node@5.1.0
-  docker: circleci/docker@2.2.0
-
 jobs:
   build-and-push:
+    docker:
+     - image: circleci/node:latest
     environment:
       DOCKER_IMAGE: circleci-test-react
-      DOCKER_TAG: latest
-    executor: docker/docker
     steps:
-      - setup_remote_docker
       - checkout
-      - docker/check:
-          docker-username: DOCKER_LOGIN
-          docker-password: DOCKER_PASSWORD
-      - docker/build:
-          # image: $DOCKER_LOGIN/$DOCKER_IMAGE
-          image: anhtndocker/$DOCKER_IMAGE
-          tag: $DOCKER_TAG
-      - docker/push:
-          digest-path: /tmp/digest.txt
-          # image: $DOCKER_LOGIN/$DOCKER_IMAGE
-          image: anhtndocker/$DOCKER_IMAGE
-          tag: $DOCKER_TAG
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package-lock.json" }}
+          - v1-dependencies-
       - run:
-          command: |
-            echo "Digest is: $(</tmp/digest.txt)"
-  deploy:
-    executor: docker/docker
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - $SSH_KEY_FINGERPRINT
-      - run: ssh -oStrictHostKeyChecking=no $DEPLOYED_USER@$DEPLOYED_SERVER './deploy.sh'
+          name: Log in to DockerHub
+          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
+      - run:
+          name: Build docker image
+          command: docker build -t anhntdocker/$IMAGE_NAME:latest .
+      - run:
+          name: Push docker image to DockerHub
+          command: docker push anhntdocker/$IMAGE_NAME:latest
+#   deploy:
+#     executor: docker/docker
+#     steps:
+#       - add_ssh_keys:
+#           fingerprints:
+#             - $SSH_KEY_FINGERPRINT
+#       - run: ssh -oStrictHostKeyChecking=no $DEPLOYED_USER@$DEPLOYED_SERVER './deploy.sh'
 workflows:
   commit:
     jobs:
@@ -46,6 +41,6 @@ workflows:
             branches:
               only:
                 - master
-      - deploy:
-         requires:
-          - build-and-push
+      # - deploy:
+      #    requires:
+      #     - build-and-push
