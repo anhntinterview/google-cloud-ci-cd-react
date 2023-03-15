@@ -29,11 +29,9 @@ jobs:
       - docker/check
       - docker/build:
           image: $DOCKER_LOGIN/$DOCKER_IMAGE
-          # image: anhntdocker/$DOCKER_IMAGE
       - docker/push:
           digest-path: /tmp/digest.txt
           image: $DOCKER_LOGIN/$DOCKER_IMAGE
-          # image: anhntdocker/$DOCKER_IMAGE
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
@@ -43,7 +41,8 @@ jobs:
      - add_ssh_keys:
          fingerprints:
            - $SSH_KEY_FINGERPRINT
-     - run: ssh -oStrictHostKeyChecking=no $HOST_USER@$HOST './deploy.sh'
+     - run: ssh -oStrictHostKeyChecking=no circleci@139.59.238.79 './deploy.sh'
+    #  - run: ssh -oStrictHostKeyChecking=no $HOST_USER@$HOST './deploy.sh'
 
 workflows:
   commit:
