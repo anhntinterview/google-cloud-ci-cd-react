@@ -1,22 +1,51 @@
 version: 2.1
-orbs:
-  node: circleci/docker@2.2.0
-# Define the jobs we want to run for this project
-jobs:
-  pull-and-build:
-    docker:
-      - image: "cimg/base:stable"
-    steps:
-      - checkout
-      - run: ssh -oStrictHostKeyChecking=no -v $USER@$IP "./deploy.sh"
 
-# Orchestrate our job run sequence
+orbs:
+  node: circleci/node@5.1.0
+  docker: circleci/docker@2.2.0
+
+jobs:
+  build-and-push:
+    environment:
+      DOCKER_IMAGE: circleci-test-react
+      DOCKER_TAG: latest
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check:
+          docker-username: DOCKER_LOGIN
+          docker-password: DOCKER_PASSWORD
+      - docker/build:
+          # image: $DOCKER_LOGIN/$DOCKER_IMAGE
+          image: anhtndocker/$DOCKER_IMAGE
+          tag: $DOCKER_TAG
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          # image: $DOCKER_LOGIN/$DOCKER_IMAGE
+          image: anhtndocker/$DOCKER_IMAGE
+          tag: $DOCKER_TAG
+      - run:
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
+  deploy:
+    executor: docker/docker
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - $SSH_KEY_FINGERPRINT
+      - run: ssh -oStrictHostKeyChecking=no $DEPLOYED_USER@$DEPLOYED_SERVER './deploy.sh'
 workflows:
-  version: 2
-  build-project:
+  commit:
     jobs:
-      - pull-and-build:
+      - node/test
+      - build-and-push:
+          requires:
+            - "node/test"
           filters:
             branches:
               only:
-                - main
+                - master
+      - deploy:
+         requires:
+          - build-and-push
