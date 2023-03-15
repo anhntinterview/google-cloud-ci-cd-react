@@ -1,39 +1,40 @@
 version: 2.1
-
 orbs:
-  node: circleci/node@5.1.0
+  node: circleci/node@5.0.2
+  docker: circleci/docker@2.2.0
 jobs:
-  build-and-push:
-    executor: node/default
-    environment:
-      DOCKER_IMAGE: circleci-test-react
+  node/test:
+    executor: node/default # use the default executor defined within the orb
     steps:
       - checkout
       - node/install-packages:
-          pkg-manager: npm
+          pkg-manager: yarn
       - run:
-          command: npm run test
+          command: yarn test
           name: Run tests
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package-lock.json" }}
-          - v1-dependencies-
       - run:
-          name: Log in to DockerHub
-          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
+          command: yarn build
+          name: Build app
+      - persist_to_workspace:
+          root: ~/google-cloud-ci-cd-react
+          paths:
+            - .
+  build-and-push: # this can be any name you choose
+    environment:
+      DOCKER_IMAGE: circlceci-react-test
+    executor: docker/default
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - docker/build:
+          image: anhntdocker/$DOCKER_IMAGE
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: anhntdocker/$DOCKER_IMAGE
       - run:
-          name: Build docker image
-          command: docker build -t anhntdocker/$IMAGE_NAME:latest .
-      - run:
-          name: Push docker image to DockerHub
-          command: docker push anhntdocker/$IMAGE_NAME:latest
-#   deploy:
-#     executor: docker/docker
-#     steps:
-#       - add_ssh_keys:
-#           fingerprints:
-#             - $SSH_KEY_FINGERPRINT
-#       - run: ssh -oStrictHostKeyChecking=no $DEPLOYED_USER@$DEPLOYED_SERVER './deploy.sh'
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
 workflows:
   commit:
     jobs:
@@ -45,6 +46,3 @@ workflows:
             branches:
               only:
                 - master
-      # - deploy:
-      #    requires:
-      #     - build-and-push
