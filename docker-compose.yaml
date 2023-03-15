@@ -3,4 +3,4 @@ services:
   mywebsite:
     image: anhntdocker/circleci-react-test
     ports:
-      - "8080:80"
+      - "3333:80"
