@@ -1,24 +1,48 @@
 version: 2.1
-
-# Define the jobs we want to run for this project
+orbs:
+  node: circleci/node@5.0.2
+  docker: circleci/docker@2.2.0
 jobs:
-  pull-and-build:
-    environment:
-      USER: root
-      IP: 139.59.238.79
-    docker:
-      - image: circleci-myreact
+  node/test:
+    executor: node/default # use the default executor defined within the orb
     steps:
       - checkout
-      - run: ssh -oStrictHostKeyChecking=no -v $USER@$IP "./deploy.sh"
-
-# Orchestrate our job run sequence
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: yarn test
+          name: Run tests
+      - run:
+          command: yarn build
+          name: Build app
+      - persist_to_workspace:
+          root: ~/google-cloud-ci-cd-react
+          paths:
+            - .
+  build-and-push: # this can be any name you choose
+    environment:
+      DOCKER_IMAGE: circlceci-react-test
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - docker/build:
+          image: anhntdocker/$DOCKER_IMAGE
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: anhntdocker/$DOCKER_IMAGE
+      - run:
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
 workflows:
-  version: 2
-  build-project:
+  commit:
     jobs:
-      - pull-and-build:
+      - node/test
+      - build-and-push:
+          requires:
+            - "node/test"
           filters:
             branches:
               only:
-                - main
+                - master
