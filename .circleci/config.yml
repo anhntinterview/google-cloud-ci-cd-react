@@ -21,20 +21,30 @@ jobs:
             - .
   build-and-push: # this can be any name you choose
     environment:
-      DOCKER_IMAGE: circlceci-react-test
+      DOCKER_IMAGE: circleci-react-test
     executor: docker/docker
     steps:
       - setup_remote_docker
       - checkout
       - docker/check
       - docker/build:
-          image: anhntdocker/$DOCKER_IMAGE
+          image: $DOCKER_LOGIN/$DOCKER_IMAGE
+          # image: anhntdocker/$DOCKER_IMAGE
       - docker/push:
           digest-path: /tmp/digest.txt
-          image: anhntdocker/$DOCKER_IMAGE
+          image: $DOCKER_LOGIN/$DOCKER_IMAGE
+          # image: anhntdocker/$DOCKER_IMAGE
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
+  deploy:
+    executor: docker/docker
+    steps:
+     - add_ssh_keys:
+         fingerprints:
+           - $SSH_KEY_FINGERPRINT
+     - run: ssh -oStrictHostKeyChecking=no $HOST_USER@$HOST './deploy.sh'
+
 workflows:
   commit:
     jobs:
@@ -46,3 +56,6 @@ workflows:
             branches:
               only:
                 - master
+      - deploy:
+          requires:
+            - build-and-push
