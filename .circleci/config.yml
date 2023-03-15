@@ -22,7 +22,7 @@ jobs:
   build-and-push: # this can be any name you choose
     environment:
       DOCKER_IMAGE: circlceci-react-test
-    executor: docker/default
+    executor: docker/docker
     steps:
       - setup_remote_docker
       - checkout
