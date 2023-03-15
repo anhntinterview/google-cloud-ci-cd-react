@@ -4,12 +4,16 @@ orbs:
   node: circleci/node@5.1.0
 jobs:
   build-and-push:
-    docker:
-     - image: circleci/node:latest
+    executor: node/default
     environment:
       DOCKER_IMAGE: circleci-test-react
     steps:
       - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          command: npm run test
+          name: Run tests
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package-lock.json" }}
