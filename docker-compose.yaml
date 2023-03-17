@@ -1,6 +1,0 @@
-version: "3.3"
-services:
-  mywebsite:
-    image: anhntdocker/circleci-react-test
-    ports:
-      - "3333:80"
