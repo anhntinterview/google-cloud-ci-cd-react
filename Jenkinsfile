@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        nodejs 'nodejs'
+        nodejs 'Nodejs'
     }
     parameters {
         choice(name:'VERSION', choices:['1.0', '1.1', '1.2'], description:'Choose the version of the project')
