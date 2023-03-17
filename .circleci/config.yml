@@ -22,8 +22,6 @@ jobs:
   build-and-push: # this can be any name you choose
     environment:
       DOCKER_IMAGE: circleci-react-test
-      CONTAINER_RUNNING_NAME: circleci-react-test-running
-      DOCKERHUB_TAG: anhntdocker
     executor: docker/docker
     steps:
       - setup_remote_docker
@@ -49,18 +47,10 @@ jobs:
      - run:
         name: Docker Compose Command
         command: |
-          # docker-compose stop
-          # docker-compose rm -f
-          # docker-compose pull
-          # docker-compose up -d
-          # docker stop ${{ env.CONTAINER_RUNNING_NAME }}
-          # Remove old container & image
-          docker rm ${{ env.CONTAINER_RUNNING_NAME }}
-          docker rmi $(docker image ls -q)
-          # Pull from DockerHub
-          docker pull $(echo $DOCKERHUB_TAG)/$(echo $DOCKER_IMAGE):latest
-          # Run a new container from a new image
-          docker run --name ${{ env.CONTAINER_RUNNING_NAME }} -d -p 8080:80 $(echo $DOCKERHUB_TAG)/$(echo $DOCKER_IMAGE):latest
+          docker-compose stop
+          docker-compose rm -f
+          docker-compose pull
+          docker-compose up -d
     #  - run: ssh -oStrictHostKeyChecking=no $HOST_USER@$HOST './deploy.sh'
 
 workflows:
