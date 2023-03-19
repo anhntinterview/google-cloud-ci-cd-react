@@ -1,34 +1,17 @@
 pipeline {
-    agent any
-    tools {
-        nodejs 'nodejs'
+    agent {
+        docker {
+            image 'node:lts-buster-slim'
+            args '-p 3000:3000'
+        }
     }
-    parameters {
-        choice(name:'VERSION', choices:['1.0', '1.1', '1.2'], description:'Choose the version of the project')
-
-        booleanParam(name :'executeTests', description:'Execute the tests', defaultValue:false)
+    environment {
+        CI = 'true'
     }
-
     stages {
         stage('Build') {
             steps {
                 sh 'npm install'
-            // sh 'npm run build'
-            }
-        }
-        stage('Test') {
-            steps {
-                // sh 'npm run test'
-                echo 'Test'
-            }
-        }
-        stage('Build Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-account-username-password', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh 'docker build -t anhntdocker/sample-react-app-jenkins-ec2 .'
-                    sh "echo $PASS | docker login -u $USER --password-stdin"
-                    sh 'docker push anhntdocker/sample-react-app-jenkins-ec2'
-                }
             }
         }
     }
